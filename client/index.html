@@ -25,7 +25,7 @@
           <h2 id="view-title">Welcome back 👋</h2>
           <p id="view-subtitle">Track progress, assignments, and overdue work in one place.</p>
         </div>
-        <div class="user-pill" id="user-pill"></div>
+        <label class="user-pill">Role: <select id="role-select"><option value="admin">Admin</option><option value="member">Member</option></select></label>
       </header>
 
       <section class="stats-grid" id="stats-grid">
@@ -65,148 +65,138 @@
     </main>
   </div>
 
-<script>
-const USERS_KEY = 'pf_users';
-const SESSION_KEY = 'pf_session';
-const teamMembers = ['Rina','Lee','Maya','Arun','Nina'];
-const projects = [
-  { name: 'Website Revamp', owner: 'Rina', status: 'In Progress', due: 'May 22' },
-  { name: 'Mobile App', owner: 'Lee', status: 'To Do', due: 'Jun 3' }
-];
-const tableData = {
-  dashboard: [
-    ['Set up auth flow', 'Rina', '<span class="tag todo">To Do</span>', 'May 8'],
-    ['Project API endpoints', 'Lee', '<span class="tag progress">In Progress</span>', 'May 6'],
-    ['Dashboard charts', 'Maya', '<span class="tag done">Done</span>', 'May 4']
-  ],
-  tasks: [
-    ['Design landing page', 'Arun', '<span class="tag progress">In Progress</span>', 'May 9'],
-    ['Fix login redirect', 'Nina', '<span class="tag todo">To Do</span>', 'May 7'],
-    ['Write tests', 'Lee', '<span class="tag done">Done</span>', 'May 3']
-  ],
-  team: teamMembers.map((m) => [m, '2 active tasks', '<span class="tag progress">Available</span>', '-'])
-};
-const views = {
-  dashboard: { title:'Welcome back 👋', subtitle:'Track progress, assignments, and overdue work in one place.', tableTitle:'Recent Tasks' },
-  projects: { title:'Projects', subtitle:'Manage timelines, owners, and delivery status.', tableTitle:'Active Projects' },
-  tasks: { title:'Tasks', subtitle:'Review and update task progress by assignee.', tableTitle:'All Tasks' },
-  team: { title:'Team', subtitle:'See contributors and current workload.', tableTitle:'Team Activity' }
-};
+  <script>
+    const teamMembers = ['Rina', 'Lee', 'Maya', 'Arun', 'Nina'];
+    const projects = [
+      { name: 'Website Revamp', owner: 'Rina', status: 'In Progress', due: 'May 22' },
+      { name: 'Mobile App', owner: 'Lee', status: 'To Do', due: 'Jun 3' }
+    ];
 
-let authMode = 'login';
-let currentUser = null;
+    const tableData = {
+      dashboard: [
+        ['Set up auth flow', 'Rina', '<span class="tag todo">To Do</span>', 'May 8'],
+        ['Project API endpoints', 'Lee', '<span class="tag progress">In Progress</span>', 'May 6'],
+        ['Dashboard charts', 'Maya', '<span class="tag done">Done</span>', 'May 4']
+      ],
+      tasks: [
+        ['Design landing page', 'Arun', '<span class="tag progress">In Progress</span>', 'May 9'],
+        ['Fix login redirect', 'Nina', '<span class="tag todo">To Do</span>', 'May 7'],
+        ['Write tests', 'Lee', '<span class="tag done">Done</span>', 'May 3']
+      ],
+      team: teamMembers.map((member) => [member, '2 active tasks', '<span class="tag progress">Available</span>', '-'])
+    };
 
-const nav = document.getElementById('sidebar-nav');
-const title = document.getElementById('view-title');
-const subtitle = document.getElementById('view-subtitle');
-const tableTitle = document.getElementById('table-title');
-const tableBody = document.getElementById('table-body');
+    const views = {
+      dashboard: {
+        title: 'Welcome back 👋',
+        subtitle: 'Track progress, assignments, and overdue work in one place.',
+        tableTitle: 'Recent Tasks'
+      },
+      projects: {
+        title: 'Projects',
+        subtitle: 'Manage timelines, owners, and delivery status.',
+        tableTitle: 'Active Projects'
+      },
+      tasks: {
+        title: 'Tasks',
+        subtitle: 'Review and update task progress by assignee.',
+        tableTitle: 'All Tasks'
+      },
+      team: {
+        title: 'Team',
+        subtitle: 'See contributors and current workload.',
+        tableTitle: 'Team Activity'
+      }
+    };
 
-const users = () => JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-const saveUsers = (value) => localStorage.setItem(USERS_KEY, JSON.stringify(value));
-const canManageProjects = () => currentUser?.role === 'admin';
+    const currentUser = { name: 'Maya', role: 'admin' };
 
-const syncAuthUi = () => {
-  document.getElementById('auth-card').style.display = currentUser ? 'none' : 'block';
-  document.getElementById('data-card').style.display = currentUser ? 'block' : 'none';
-  document.getElementById('new-project-btn').style.display = currentUser ? 'block' : 'none';
-  document.getElementById('user-pill').textContent = currentUser ? `${currentUser.name} (${currentUser.role})` : 'Guest';
-  document.getElementById('new-project-btn').disabled = !canManageProjects();
-  document.getElementById('new-project-btn').title = canManageProjects() ? '' : 'Only Admin can create projects';
-};
+    const nav = document.getElementById('sidebar-nav');
+    const title = document.getElementById('view-title');
+    const subtitle = document.getElementById('view-subtitle');
+    const tableTitle = document.getElementById('table-title');
+    const tableBody = document.getElementById('table-body');
 
-const setAuthMode = (mode) => {
-  authMode = mode;
-  document.getElementById('auth-title').textContent = mode === 'login' ? 'Login' : 'Signup';
-  document.getElementById('auth-submit').textContent = mode === 'login' ? 'Login' : 'Signup';
-  document.getElementById('auth-switch').textContent = mode === 'login' ? 'Need Signup?' : 'Have Login?';
-  document.getElementById('role-wrap').style.display = mode === 'signup' ? 'block' : 'none';
-};
+    const renderTable = (viewKey) => {
+      tableBody.innerHTML = '';
 
-const renderTable = (viewKey) => {
-  tableBody.innerHTML = '';
-  if (viewKey === 'projects') {
-    projects.forEach((project, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${project.name}</td><td>${project.owner}</td><td><span class="tag ${project.status === 'Done' ? 'done' : project.status === 'In Progress' ? 'progress' : 'todo'}">${project.status}</span></td><td>${project.due}<button data-project-index="${index}" class="assign-btn" style="margin-left:8px" ${canManageProjects() ? '' : 'disabled'}>Assign</button></td>`;
-      tableBody.appendChild(row);
+      if (viewKey === 'projects') {
+        projects.forEach((project, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${project.name}</td>
+            <td>${project.owner}</td>
+            <td><span class="tag ${project.status === 'Done' ? 'done' : project.status === 'In Progress' ? 'progress' : 'todo'}">${project.status}</span></td>
+            <td>
+              ${project.due}
+              <button data-project-index="${index}" class="assign-btn" style="margin-left:8px">Assign</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        document.querySelectorAll('.assign-btn').forEach((button) => {
+          button.addEventListener('click', () => {
+            const index = Number(button.dataset.projectIndex);
+            const options = teamMembers.join(', ');
+            const selected = prompt(`Assign project owner (${options}):`, projects[index].owner);
+            if (!selected) return;
+            if (!teamMembers.includes(selected)) {
+              alert(`Please use one of: ${options}`);
+              return;
+            }
+            projects[index].owner = selected;
+            renderTable('projects');
+          });
+        });
+
+        return;
+      }
+
+      const rows = tableData[viewKey] || tableData.dashboard;
+      rows.forEach((cells) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${cells[3]}</td>`;
+        tableBody.appendChild(row);
+      });
+    };
+
+    nav.addEventListener('click', (event) => {
+      const link = event.target.closest('a[data-view]');
+      if (!link) return;
+      event.preventDefault();
+
+      nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+      link.classList.add('active');
+
+      const view = views[link.dataset.view];
+      title.textContent = view.title;
+      subtitle.textContent = view.subtitle;
+      tableTitle.textContent = view.tableTitle;
+      renderTable(link.dataset.view);
     });
-    document.querySelectorAll('.assign-btn').forEach((button) => button.addEventListener('click', () => {
-      if (!canManageProjects()) return alert('Only Admin can assign projects.');
-      const index = Number(button.dataset.projectIndex);
-      const selected = prompt(`Assign project owner (${teamMembers.join(', ')}):`, projects[index].owner);
-      if (!selected || !teamMembers.includes(selected)) return alert(`Please use one of: ${teamMembers.join(', ')}`);
-      projects[index].owner = selected;
-      renderTable('projects');
-    }));
-    return;
-  }
-  (tableData[viewKey] || tableData.dashboard).forEach((cells) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${cells[3]}</td>`;
-    tableBody.appendChild(row);
-  });
-};
 
-nav.addEventListener('click', (event) => {
-  const link = event.target.closest('a[data-view]'); if (!link || !currentUser) return;
-  event.preventDefault();
-  nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
-  link.classList.add('active');
-  const view = views[link.dataset.view];
-  title.textContent = view.title; subtitle.textContent = view.subtitle; tableTitle.textContent = view.tableTitle;
-  renderTable(link.dataset.view);
-});
+    document.getElementById('new-project-btn').addEventListener('click', () => {
+      const name = prompt('Project name:');
+      if (!name) return;
+      const owner = prompt(`Owner (${teamMembers.join(', ')}):`, teamMembers[0]);
+      if (!owner || !teamMembers.includes(owner)) {
+        alert(`Please set owner to one of: ${teamMembers.join(', ')}`);
+        return;
+      }
+      projects.push({ name, owner, status: 'To Do', due: 'TBD' });
+      const activeView = nav.querySelector('a.active')?.dataset.view;
+      if (activeView === 'projects') {
+        renderTable('projects');
+      }
+      alert(`Project "${name}" created and assigned to ${owner}.`);
+    });
 
-document.getElementById('new-project-btn').addEventListener('click', () => {
-  if (!canManageProjects()) return alert('Only Admin can create projects.');
-  const name = prompt('Project name:'); if (!name) return;
-  const owner = prompt(`Owner (${teamMembers.join(', ')}):`, teamMembers[0]);
-  if (!owner || !teamMembers.includes(owner)) return alert(`Please set owner to one of: ${teamMembers.join(', ')}`);
-  projects.push({ name, owner, status: 'To Do', due: 'TBD' });
-  if (nav.querySelector('a.active')?.dataset.view === 'projects') renderTable('projects');
-  alert(`Project "${name}" created and assigned to ${owner}.`);
-});
+    document.getElementById('view-all-btn').addEventListener('click', () => {
+      alert('Tip: Open the Projects tab to create and assign projects.');
+    });
 
-document.getElementById('auth-switch').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'signup' : 'login'));
-document.getElementById('auth-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-  const name = document.getElementById('auth-name').value.trim();
-  const email = document.getElementById('auth-email').value.trim().toLowerCase();
-  const password = document.getElementById('auth-password').value;
-  const role = document.getElementById('auth-role').value;
-  const allUsers = users();
-
-  if (authMode === 'signup') {
-    if (!name) return alert('Name is required for signup.');
-    if (allUsers.some((u) => u.email === email)) return alert('Email already registered.');
-    allUsers.push({ name, email, password, role });
-    saveUsers(allUsers);
-    alert('Signup successful. Please login.');
-    setAuthMode('login');
-    return;
-  }
-
-  const user = allUsers.find((u) => u.email === email && u.password === password);
-  if (!user) return alert('Invalid email or password.');
-  currentUser = { name: user.name, email: user.email, role: user.role };
-  localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-  syncAuthUi();
-  renderTable('dashboard');
-});
-
-document.getElementById('logout-btn').addEventListener('click', () => {
-  currentUser = null;
-  localStorage.removeItem(SESSION_KEY);
-  syncAuthUi();
-});
-
-document.getElementById('view-all-btn').addEventListener('click', () => alert('Tip: Open the Projects tab to create and assign projects.'));
-
-currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-setAuthMode('login');
-syncAuthUi();
-if (currentUser) renderTable('dashboard');
-</script>
+    renderTable('dashboard');
+  </script>
 </body>
 </html>
