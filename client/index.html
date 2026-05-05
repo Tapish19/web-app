@@ -101,15 +101,6 @@
     const subtitle = document.getElementById('view-subtitle');
     const tableTitle = document.getElementById('table-title');
     const tableBody = document.getElementById('table-body');
-    const roleSelect = document.getElementById('role-select');
-
-    const canManageProjects = () => currentUser.role === 'admin';
-
-    const syncRoleUi = () => {
-      roleSelect.value = currentUser.role;
-      document.getElementById('new-project-btn').disabled = !canManageProjects();
-      document.getElementById('new-project-btn').title = canManageProjects() ? '' : 'Only Admin can create projects';
-    };
 
     const renderTable = (viewKey) => {
       tableBody.innerHTML = '';
@@ -123,7 +114,7 @@
             <td><span class="tag ${project.status === 'Done' ? 'done' : project.status === 'In Progress' ? 'progress' : 'todo'}">${project.status}</span></td>
             <td>
               ${project.due}
-              <button data-project-index="${index}" class="assign-btn" style="margin-left:8px" ${canManageProjects() ? '' : 'disabled title="Only Admin can assign projects"'}>Assign</button>
+              <button data-project-index="${index}" class="assign-btn" style="margin-left:8px">Assign</button>
             </td>
           `;
           tableBody.appendChild(row);
@@ -131,10 +122,6 @@
 
         document.querySelectorAll('.assign-btn').forEach((button) => {
           button.addEventListener('click', () => {
-            if (!canManageProjects()) {
-              alert('Only Admin can assign projects.');
-              return;
-            }
             const index = Number(button.dataset.projectIndex);
             const options = teamMembers.join(', ');
             const selected = prompt(`Assign project owner (${options}):`, projects[index].owner);
@@ -175,10 +162,6 @@
     });
 
     document.getElementById('new-project-btn').addEventListener('click', () => {
-      if (!canManageProjects()) {
-        alert('Only Admin can create projects.');
-        return;
-      }
       const name = prompt('Project name:');
       if (!name) return;
       const owner = prompt(`Owner (${teamMembers.join(', ')}):`, teamMembers[0]);
@@ -194,17 +177,10 @@
       alert(`Project "${name}" created and assigned to ${owner}.`);
     });
 
-    roleSelect.addEventListener('change', () => {
-      currentUser.role = roleSelect.value;
-      syncRoleUi();
-      if (nav.querySelector('a.active')?.dataset.view === 'projects') renderTable('projects');
-    });
-
     document.getElementById('view-all-btn').addEventListener('click', () => {
       alert('Tip: Open the Projects tab to create and assign projects.');
     });
 
-    syncRoleUi();
     renderTable('dashboard');
   </script>
 </body>
