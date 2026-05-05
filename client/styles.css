@@ -51,3 +51,5 @@ th, td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #2a3763; 
   .sidebar { border-right: 0; border-bottom: 1px solid #2a3763; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+
+button { cursor: pointer; }
