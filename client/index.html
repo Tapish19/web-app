@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProjectFlow - Project Manager</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1>ProjectFlow</h1>
+      <nav>
+        <a class="active" href="#">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Tasks</a>
+        <a href="#">Team</a>
+      </nav>
+      <button class="cta">+ New Project</button>
+    </aside>
+
+    <main class="content">
+      <header class="topbar card">
+        <div>
+          <h2>Welcome back 👋</h2>
+          <p>Track progress, assignments, and overdue work in one place.</p>
+        </div>
+        <div class="user-pill">Admin</div>
+      </header>
+
+      <section class="stats-grid">
+        <article class="card stat"><h3>Total Tasks</h3><p>38</p></article>
+        <article class="card stat"><h3>In Progress</h3><p>14</p></article>
+        <article class="card stat"><h3>Done</h3><p>19</p></article>
+        <article class="card stat danger"><h3>Overdue</h3><p>5</p></article>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h3>Recent Tasks</h3>
+          <button>View All</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Task</th><th>Assignee</th><th>Status</th><th>Due</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Set up auth flow</td><td>Rina</td><td><span class="tag todo">To Do</span></td><td>May 8</td></tr>
+            <tr><td>Project API endpoints</td><td>Lee</td><td><span class="tag progress">In Progress</span></td><td>May 6</td></tr>
+            <tr><td>Dashboard charts</td><td>Maya</td><td><span class="tag done">Done</span></td><td>May 4</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
