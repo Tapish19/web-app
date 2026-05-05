@@ -10,25 +10,25 @@
   <div class="app-shell">
     <aside class="sidebar">
       <h1>ProjectFlow</h1>
-      <nav>
-        <a class="active" href="#">Dashboard</a>
-        <a href="#">Projects</a>
-        <a href="#">Tasks</a>
-        <a href="#">Team</a>
+      <nav id="sidebar-nav">
+        <a class="active" href="#" data-view="dashboard">Dashboard</a>
+        <a href="#" data-view="projects">Projects</a>
+        <a href="#" data-view="tasks">Tasks</a>
+        <a href="#" data-view="team">Team</a>
       </nav>
-      <button class="cta">+ New Project</button>
+      <button class="cta" id="new-project-btn">+ New Project</button>
     </aside>
 
     <main class="content">
       <header class="topbar card">
         <div>
-          <h2>Welcome back 👋</h2>
-          <p>Track progress, assignments, and overdue work in one place.</p>
+          <h2 id="view-title">Welcome back 👋</h2>
+          <p id="view-subtitle">Track progress, assignments, and overdue work in one place.</p>
         </div>
         <div class="user-pill">Admin</div>
       </header>
 
-      <section class="stats-grid">
+      <section class="stats-grid" id="stats-grid">
         <article class="card stat"><h3>Total Tasks</h3><p>38</p></article>
         <article class="card stat"><h3>In Progress</h3><p>14</p></article>
         <article class="card stat"><h3>Done</h3><p>19</p></article>
@@ -37,14 +37,14 @@
 
       <section class="card">
         <div class="section-head">
-          <h3>Recent Tasks</h3>
-          <button>View All</button>
+          <h3 id="table-title">Recent Tasks</h3>
+          <button id="view-all-btn">View All</button>
         </div>
         <table>
           <thead>
             <tr><th>Task</th><th>Assignee</th><th>Status</th><th>Due</th></tr>
           </thead>
-          <tbody>
+          <tbody id="table-body">
             <tr><td>Set up auth flow</td><td>Rina</td><td><span class="tag todo">To Do</span></td><td>May 8</td></tr>
             <tr><td>Project API endpoints</td><td>Lee</td><td><span class="tag progress">In Progress</span></td><td>May 6</td></tr>
             <tr><td>Dashboard charts</td><td>Maya</td><td><span class="tag done">Done</span></td><td>May 4</td></tr>
@@ -53,5 +53,57 @@
       </section>
     </main>
   </div>
+
+  <script>
+    const views = {
+      dashboard: {
+        title: 'Welcome back 👋',
+        subtitle: 'Track progress, assignments, and overdue work in one place.',
+        tableTitle: 'Recent Tasks'
+      },
+      projects: {
+        title: 'Projects',
+        subtitle: 'Manage timelines, owners, and delivery status.',
+        tableTitle: 'Active Projects'
+      },
+      tasks: {
+        title: 'Tasks',
+        subtitle: 'Review and update task progress by assignee.',
+        tableTitle: 'All Tasks'
+      },
+      team: {
+        title: 'Team',
+        subtitle: 'See contributors and current workload.',
+        tableTitle: 'Team Activity'
+      }
+    };
+
+    const nav = document.getElementById('sidebar-nav');
+    const title = document.getElementById('view-title');
+    const subtitle = document.getElementById('view-subtitle');
+    const tableTitle = document.getElementById('table-title');
+
+    nav.addEventListener('click', (event) => {
+      const link = event.target.closest('a[data-view]');
+      if (!link) return;
+      event.preventDefault();
+
+      nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+      link.classList.add('active');
+
+      const view = views[link.dataset.view];
+      title.textContent = view.title;
+      subtitle.textContent = view.subtitle;
+      tableTitle.textContent = view.tableTitle;
+    });
+
+    document.getElementById('new-project-btn').addEventListener('click', () => {
+      alert('New Project flow coming next.');
+    });
+
+    document.getElementById('view-all-btn').addEventListener('click', () => {
+      alert('Showing full list view soon.');
+    });
+  </script>
 </body>
 </html>
