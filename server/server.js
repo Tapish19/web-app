@@ -12,13 +12,21 @@ app.use(express.json());
 // DB
 connectDB();
 
-// routes
+// API routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/projects", require("./routes/project"));
 app.use("/api/tasks", require("./routes/task"));
 
 app.get("/", (req, res) => {
-    res.send("API Running");
+    res.json({
+        service: "ProjectFlow Backend API",
+        status: "ok",
+        docsHint: "Use /api/auth, /api/projects, /api/tasks"
+    });
+});
+
+app.get("/health", (req, res) => {
+    res.json({ status: "ok" });
 });
 
 app.listen(process.env.PORT, () =>
