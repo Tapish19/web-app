@@ -25,7 +25,7 @@
           <h2 id="view-title">Welcome back 👋</h2>
           <p id="view-subtitle">Track progress, assignments, and overdue work in one place.</p>
         </div>
-        <div class="user-pill">Admin</div>
+        <label class="user-pill">Role: <select id="role-select"><option value="admin">Admin</option><option value="member">Member</option></select></label>
       </header>
 
       <section class="stats-grid" id="stats-grid">
@@ -93,6 +93,8 @@
         tableTitle: 'Team Activity'
       }
     };
+
+    const currentUser = { name: 'Maya', role: 'admin' };
 
     const nav = document.getElementById('sidebar-nav');
     const title = document.getElementById('view-title');
