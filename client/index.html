@@ -10,48 +10,179 @@
   <div class="app-shell">
     <aside class="sidebar">
       <h1>ProjectFlow</h1>
-      <nav>
-        <a class="active" href="#">Dashboard</a>
-        <a href="#">Projects</a>
-        <a href="#">Tasks</a>
-        <a href="#">Team</a>
+      <nav id="sidebar-nav">
+        <a class="active" href="#" data-view="dashboard">Dashboard</a>
+        <a href="#" data-view="projects">Projects</a>
+        <a href="#" data-view="tasks">Tasks</a>
+        <a href="#" data-view="team">Team</a>
       </nav>
-      <button class="cta">+ New Project</button>
+      <button class="cta" id="new-project-btn">+ New Project</button>
     </aside>
 
     <main class="content">
       <header class="topbar card">
         <div>
-          <h2>Welcome back 👋</h2>
-          <p>Track progress, assignments, and overdue work in one place.</p>
+          <h2 id="view-title">Welcome back 👋</h2>
+          <p id="view-subtitle">Track progress, assignments, and overdue work in one place.</p>
         </div>
         <div class="user-pill">Admin</div>
       </header>
 
-      <section class="stats-grid">
-        <article class="card stat"><h3>Total Tasks</h3><p>38</p></article>
-        <article class="card stat"><h3>In Progress</h3><p>14</p></article>
-        <article class="card stat"><h3>Done</h3><p>19</p></article>
-        <article class="card stat danger"><h3>Overdue</h3><p>5</p></article>
-      </section>
+      <section class="stats-grid" id="stats-grid"></section>
 
       <section class="card">
         <div class="section-head">
-          <h3>Recent Tasks</h3>
-          <button>View All</button>
+          <h3 id="table-title">Recent Tasks</h3>
+          <button id="view-all-btn">View All</button>
         </div>
         <table>
-          <thead>
-            <tr><th>Task</th><th>Assignee</th><th>Status</th><th>Due</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Set up auth flow</td><td>Rina</td><td><span class="tag todo">To Do</span></td><td>May 8</td></tr>
-            <tr><td>Project API endpoints</td><td>Lee</td><td><span class="tag progress">In Progress</span></td><td>May 6</td></tr>
-            <tr><td>Dashboard charts</td><td>Maya</td><td><span class="tag done">Done</span></td><td>May 4</td></tr>
-          </tbody>
+          <thead><tr id="table-head-row"></tr></thead>
+          <tbody id="table-body"></tbody>
         </table>
       </section>
     </main>
   </div>
+
+  <dialog id="project-dialog" class="modal">
+    <form id="project-form" class="modal-form" method="dialog">
+      <h3>Create Project</h3>
+      <label>Project Name <input required id="project-name" type="text" placeholder="Website Redesign" /></label>
+      <label>Assign To
+        <select id="project-assignee">
+          <option>Rina</option><option>Lee</option><option>Maya</option><option>Vaibhav</option>
+        </select>
+      </label>
+      <label>Due Date <input id="project-due" type="date" required /></label>
+      <div class="modal-actions">
+        <button type="button" class="secondary" id="cancel-project-btn">Cancel</button>
+        <button type="submit">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const projects = [
+      { name: 'Auth Revamp', assignee: 'Rina', status: 'In Progress', due: '2026-05-08' },
+      { name: 'API Stability', assignee: 'Lee', status: 'To Do', due: '2026-05-10' }
+    ];
+
+    const views = {
+      dashboard: {
+        title: 'Welcome back 👋',
+        subtitle: 'Track progress, assignments, and overdue work in one place.',
+        tableTitle: 'Recent Tasks',
+        headers: ['Task', 'Assignee', 'Status', 'Due'],
+        getRows: () => [
+          ['Set up auth flow', 'Rina', '<span class="tag todo">To Do</span>', 'May 8'],
+          ['Project API endpoints', 'Lee', '<span class="tag progress">In Progress</span>', 'May 6'],
+          ['Dashboard charts', 'Maya', '<span class="tag done">Done</span>', 'May 4']
+        ]
+      },
+      projects: {
+        title: 'Projects',
+        subtitle: 'Create projects and assign them to team members.',
+        tableTitle: 'Active Projects',
+        headers: ['Project', 'Owner', 'Status', 'Due'],
+        getRows: () => projects.map((p) => [
+          p.name,
+          `<select data-project="${p.name}" class="assignee-select"><option ${p.assignee==='Rina'?'selected':''}>Rina</option><option ${p.assignee==='Lee'?'selected':''}>Lee</option><option ${p.assignee==='Maya'?'selected':''}>Maya</option><option ${p.assignee==='Vaibhav'?'selected':''}>Vaibhav</option></select>`,
+          `<span class="tag progress">${p.status}</span>`,
+          new Date(p.due).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        ])
+      },
+      tasks: {
+        title: 'Tasks',
+        subtitle: 'Review and update task progress by assignee.',
+        tableTitle: 'All Tasks',
+        headers: ['Task', 'Assignee', 'Status', 'Due'],
+        getRows: () => views.dashboard.getRows()
+      },
+      team: {
+        title: 'Team',
+        subtitle: 'See contributors and current workload.',
+        tableTitle: 'Team Activity',
+        headers: ['Member', 'Open Items', 'Current Focus', 'Next Deadline'],
+        getRows: () => [
+          ['Rina', '6', 'Authentication', 'May 8'],
+          ['Lee', '4', 'Project APIs', 'May 6'],
+          ['Maya', '3', 'UI polish', 'May 7']
+        ]
+      }
+    };
+
+    const stats = [
+      ['Total Tasks', '38', ''],
+      ['In Progress', '14', ''],
+      ['Done', '19', ''],
+      ['Overdue', '5', 'danger']
+    ];
+
+    const nav = document.getElementById('sidebar-nav');
+    const title = document.getElementById('view-title');
+    const subtitle = document.getElementById('view-subtitle');
+    const tableTitle = document.getElementById('table-title');
+    const headRow = document.getElementById('table-head-row');
+    const body = document.getElementById('table-body');
+    const statsGrid = document.getElementById('stats-grid');
+    const dialog = document.getElementById('project-dialog');
+
+    function renderStats() {
+      statsGrid.innerHTML = stats.map(([label, value, cls]) => `
+        <article class="card stat ${cls}"><h3>${label}</h3><p>${value}</p></article>
+      `).join('');
+    }
+
+    function renderView(viewKey) {
+      const view = views[viewKey];
+      title.textContent = view.title;
+      subtitle.textContent = view.subtitle;
+      tableTitle.textContent = view.tableTitle;
+      headRow.innerHTML = view.headers.map((h) => `<th>${h}</th>`).join('');
+      body.innerHTML = view.getRows().map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('');
+    }
+
+    nav.addEventListener('click', (event) => {
+      const link = event.target.closest('a[data-view]');
+      if (!link) return;
+      event.preventDefault();
+      nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+      link.classList.add('active');
+      renderView(link.dataset.view);
+    });
+
+    body.addEventListener('change', (event) => {
+      if (!event.target.classList.contains('assignee-select')) return;
+      const projectName = event.target.dataset.project;
+      const project = projects.find((p) => p.name === projectName);
+      if (!project) return;
+      project.assignee = event.target.value;
+    });
+
+    document.getElementById('new-project-btn').addEventListener('click', () => dialog.showModal());
+    document.getElementById('cancel-project-btn').addEventListener('click', () => dialog.close());
+
+    document.getElementById('project-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('project-name').value.trim();
+      const assignee = document.getElementById('project-assignee').value;
+      const due = document.getElementById('project-due').value;
+      if (!name || !due) return;
+      projects.unshift({ name, assignee, status: 'To Do', due });
+      dialog.close();
+      event.target.reset();
+      const isProjectView = document.querySelector('a[data-view="projects"]').classList.contains('active');
+      if (isProjectView) renderView('projects');
+    });
+
+    document.getElementById('view-all-btn').addEventListener('click', () => {
+      nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+      const projectsTab = document.querySelector('a[data-view="projects"]');
+      projectsTab.classList.add('active');
+      renderView('projects');
+    });
+
+    renderStats();
+    renderView('dashboard');
+  </script>
 </body>
 </html>
