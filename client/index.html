@@ -35,10 +35,25 @@
         <article class="card stat danger"><h3>Overdue</h3><p>5</p></article>
       </section>
 
-      <section class="card">
+      <section class="card" id="auth-card">
+        <div class="section-head"><h3 id="auth-title">Login</h3></div>
+        <form id="auth-form">
+          <p><input id="auth-name" placeholder="Full name (required for signup)" style="width:100%;padding:8px;margin-bottom:8px" /></p>
+          <p><input id="auth-email" type="email" placeholder="Email" required style="width:100%;padding:8px;margin-bottom:8px" /></p>
+          <p><input id="auth-password" type="password" placeholder="Password" required style="width:100%;padding:8px;margin-bottom:8px" /></p>
+          <p id="role-wrap" style="display:none;margin-bottom:8px">
+            <select id="auth-role" style="width:100%;padding:8px"><option value="member">Member</option><option value="admin">Admin</option></select>
+          </p>
+          <button class="cta" type="submit" id="auth-submit">Login</button>
+          <button type="button" id="auth-switch" style="margin-left:8px">Need Signup?</button>
+        </form>
+      </section>
+
+      <section class="card" id="data-card" style="display:none">
         <div class="section-head">
           <h3 id="table-title">Recent Tasks</h3>
           <button id="view-all-btn">View All</button>
+          <button id="logout-btn">Logout</button>
         </div>
         <table>
           <thead>
