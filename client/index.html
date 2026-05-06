@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ProjectFlow - Project Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProjectFlow</title>
 
   <style>
+
     *{
       margin:0;
       padding:0;
@@ -19,40 +20,9 @@
       min-height:100vh;
     }
 
-    .content{
-      padding:20px;
-    }
-
-    .card{
-      background:#1e293b;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:20px;
-    }
-
-    .section-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:20px;
-    }
-
-    .cta{
-      background:#2563eb;
-      color:white;
-      border:none;
-      padding:10px 14px;
-      border-radius:8px;
-      cursor:pointer;
-    }
-
-    .cta:hover{
-      background:#1d4ed8;
-    }
-
     .app-shell{
       display:grid;
-      grid-template-columns:250px 1fr;
+      grid-template-columns:260px 1fr;
       min-height:100vh;
     }
 
@@ -69,18 +39,28 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      margin-bottom:20px;
     }
 
     .sidebar nav a{
       color:white;
       text-decoration:none;
-      padding:10px;
+      padding:12px;
       border-radius:8px;
     }
 
     .sidebar nav a.active{
       background:#2563eb;
+    }
+
+    .content{
+      padding:20px;
+    }
+
+    .card{
+      background:#1e293b;
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:20px;
     }
 
     .topbar{
@@ -113,9 +93,25 @@
     }
 
     th,td{
+      border-bottom:1px solid #334155;
       padding:12px;
       text-align:left;
-      border-bottom:1px solid #334155;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+    }
+
+    .cta{
+      background:#2563eb;
+      color:white;
+      padding:10px 14px;
+      border-radius:8px;
+    }
+
+    .danger{
+      background:#dc2626;
     }
 
     .tag{
@@ -137,169 +133,215 @@
     }
 
     input,select{
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:8px;
       background:#334155;
       color:white;
+      border:none;
+      padding:8px;
+      border-radius:8px;
     }
 
-    button{
-      cursor:pointer;
+    #auth-screen{
+      max-width:500px;
+      margin:60px auto;
     }
+
+    .hidden{
+      display:none;
+    }
+
   </style>
 </head>
 
 <body>
 
-  <!-- AUTH SCREEN -->
+<!-- LOGIN / SIGNUP -->
 
-  <main class="content" id="auth-screen" style="max-width:560px;margin:40px auto;">
-    <section class="card">
+<div id="auth-screen">
 
-      <div class="section-head">
-        <h3 id="auth-title">Login</h3>
-      </div>
+  <div class="card">
 
-      <form id="auth-form">
+    <h2 id="auth-title">Login</h2>
 
-        <p id="auth-message" style="min-height:20px;color:#9ec5ff;margin-bottom:10px;"></p>
+    <br>
 
-        <p style="margin-bottom:10px;">
-          <input id="auth-name" placeholder="Full Name (only for signup)" />
-        </p>
+    <p id="auth-message"></p>
 
-        <p style="margin-bottom:10px;">
-          <input id="auth-email" type="email" placeholder="Email" required />
-        </p>
+    <br>
 
-        <p style="margin-bottom:10px;">
-          <input id="auth-password" type="password" placeholder="Password" required />
-        </p>
+    <form id="auth-form">
 
-        <button class="cta" type="submit" id="auth-submit">
-          Login
-        </button>
+      <input
+        id="auth-name"
+        placeholder="Full Name (Signup only)"
+        style="width:100%;margin-bottom:10px;"
+      />
 
-        <button type="button" id="auth-switch" class="cta" style="margin-left:10px;background:#475569;">
-          Need Signup?
-        </button>
+      <input
+        id="auth-email"
+        type="email"
+        placeholder="Email"
+        required
+        style="width:100%;margin-bottom:10px;"
+      />
 
-      </form>
-    </section>
-  </main>
+      <input
+        id="auth-password"
+        type="password"
+        placeholder="Password"
+        required
+        style="width:100%;margin-bottom:10px;"
+      />
 
-  <!-- APP -->
-
-  <div class="app-shell" id="app-shell" style="display:none;">
-
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar">
-
-      <h1>ProjectFlow</h1>
-
-      <nav id="sidebar-nav">
-        <a class="active" href="#" data-view="dashboard">Dashboard</a>
-        <a href="#" data-view="projects">Projects</a>
-        <a href="#" data-view="tasks">Tasks</a>
-        <a href="#" data-view="team">Team</a>
-      </nav>
-
-      <button class="cta" id="new-project-btn">
-        + New Project
+      <button class="cta" id="auth-submit">
+        Login
       </button>
 
-      <button class="cta" id="new-task-btn" style="margin-top:10px;">
-        + New Task
+      <button
+        type="button"
+        class="cta"
+        id="auth-switch"
+        style="background:#475569;margin-left:10px;"
+      >
+        Need Signup?
       </button>
 
-    </aside>
-
-    <!-- MAIN -->
-
-    <main class="content">
-
-      <header class="topbar card">
-
-        <div>
-          <h2 id="view-title">Welcome back 👋</h2>
-          <p id="view-subtitle">
-            Track progress, assignments, and overdue work in one place.
-          </p>
-        </div>
-
-        <div class="user-pill" id="user-pill">
-          Guest
-        </div>
-
-      </header>
-
-      <!-- STATS -->
-
-      <section class="stats-grid">
-
-        <article class="card stat">
-          <h3>Total Tasks</h3>
-          <p id="stat-total">0</p>
-        </article>
-
-        <article class="card stat">
-          <h3>In Progress</h3>
-          <p id="stat-progress">0</p>
-        </article>
-
-        <article class="card stat">
-          <h3>Done</h3>
-          <p id="stat-done">0</p>
-        </article>
-
-        <article class="card stat">
-          <h3>Overdue</h3>
-          <p id="stat-overdue">0</p>
-        </article>
-
-      </section>
-
-      <!-- TABLE -->
-
-      <section class="card">
-
-        <div class="section-head">
-          <h3 id="table-title">Recent Tasks</h3>
-
-          <div>
-            <button id="view-all-btn" class="cta">
-              View All
-            </button>
-
-            <button id="logout-btn" class="cta" style="background:#dc2626;">
-              Logout
-            </button>
-          </div>
-        </div>
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Owner / Assignee</th>
-              <th>Status</th>
-              <th>Due</th>
-            </tr>
-          </thead>
-
-          <tbody id="table-body"></tbody>
-
-        </table>
-
-      </section>
-
-    </main>
+    </form>
 
   </div>
+
+</div>
+
+<!-- APP -->
+
+<div class="app-shell hidden" id="app-shell">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar">
+
+    <h1>ProjectFlow</h1>
+
+    <nav id="sidebar-nav">
+
+      <a href="#" class="active" data-view="dashboard">
+        Dashboard
+      </a>
+
+      <a href="#" data-view="projects">
+        Projects
+      </a>
+
+      <a href="#" data-view="tasks">
+        Tasks
+      </a>
+
+    </nav>
+
+    <br>
+
+    <button class="cta" id="new-project-btn">
+      + New Project
+    </button>
+
+    <br><br>
+
+    <button class="cta" id="new-task-btn">
+      + New Task
+    </button>
+
+  </aside>
+
+  <!-- CONTENT -->
+
+  <main class="content">
+
+    <div class="card topbar">
+
+      <div>
+        <h2 id="view-title">
+          Dashboard
+        </h2>
+
+        <p id="view-subtitle">
+          Manage projects and tasks
+        </p>
+      </div>
+
+      <div>
+
+        <span class="user-pill" id="user-pill">
+          Guest
+        </span>
+
+        <button
+          class="cta danger"
+          id="logout-btn"
+          style="margin-left:10px;"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+      <article class="card stat">
+        <h3>Total Tasks</h3>
+        <p id="stat-total">0</p>
+      </article>
+
+      <article class="card stat">
+        <h3>In Progress</h3>
+        <p id="stat-progress">0</p>
+      </article>
+
+      <article class="card stat">
+        <h3>Done</h3>
+        <p id="stat-done">0</p>
+      </article>
+
+      <article class="card stat">
+        <h3>Projects</h3>
+        <p id="stat-projects">0</p>
+      </article>
+
+    </section>
+
+    <!-- TABLE -->
+
+    <section class="card">
+
+      <h3 id="table-title">
+        Recent Tasks
+      </h3>
+
+      <br>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Assigned</th>
+            <th>Status</th>
+            <th>Due</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="table-body"></tbody>
+
+      </table>
+
+    </section>
+
+  </main>
+
+</div>
 
 <script>
 
@@ -321,67 +363,40 @@ const projects = [
   {
     id:1,
     name:"Website Revamp",
-    owner:"Rina",
+    admin:"Rina",
+    members:["Lee","Maya"],
     status:"In Progress",
-    due:"2026-05-22"
-  },
-  {
-    id:2,
-    name:"Mobile App",
-    owner:"Lee",
-    status:"To Do",
-    due:"2026-06-03"
+    due:"2026-05-20"
   }
 ];
 
 const tasks = [
   {
-    task:"Set up auth flow",
+    id:1,
+    title:"Setup Login",
     projectId:1,
-    assignee:"Rina",
+    createdBy:"Rina",
+    assignee:"Lee",
     status:"To Do",
     due:"2026-05-08"
-  },
-  {
-    task:"Project API endpoints",
-    projectId:2,
-    assignee:"Lee",
-    status:"In Progress",
-    due:"2026-05-06"
-  },
-  {
-    task:"Dashboard charts",
-    projectId:1,
-    assignee:"Maya",
-    status:"Done",
-    due:"2026-05-04"
   }
 ];
 
 const views = {
 
   dashboard:{
-    title:"Welcome back 👋",
-    subtitle:"Track progress in one place.",
-    tableTitle:"Recent Tasks"
+    title:"Dashboard",
+    subtitle:"Overview of tasks"
   },
 
   projects:{
     title:"Projects",
-    subtitle:"Manage projects and admins.",
-    tableTitle:"All Projects"
+    subtitle:"Manage all projects"
   },
 
   tasks:{
     title:"Tasks",
-    subtitle:"Track assigned tasks.",
-    tableTitle:"All Tasks"
-  },
-
-  team:{
-    title:"Team",
-    subtitle:"View contributors.",
-    tableTitle:"Team Members"
+    subtitle:"Manage all tasks"
   }
 
 };
@@ -390,25 +405,16 @@ const nav = document.getElementById("sidebar-nav");
 const tableBody = document.getElementById("table-body");
 
 function users(){
-  return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+  return JSON.parse(
+    localStorage.getItem(USERS_KEY) || "[]"
+  );
 }
 
 function saveUsers(data){
-  localStorage.setItem(USERS_KEY, JSON.stringify(data));
-}
-
-function syncUi(){
-
-  const loggedIn = Boolean(currentUser);
-
-  document.getElementById("auth-screen").style.display =
-    loggedIn ? "none" : "block";
-
-  document.getElementById("app-shell").style.display =
-    loggedIn ? "grid" : "none";
-
-  document.getElementById("user-pill").textContent =
-    loggedIn ? currentUser.name : "Guest";
+  localStorage.setItem(
+    USERS_KEY,
+    JSON.stringify(data)
+  );
 }
 
 function setMessage(text,color="#9ec5ff"){
@@ -424,10 +430,14 @@ function setAuthMode(mode){
   authMode = mode;
 
   document.getElementById("auth-title").textContent =
-    mode === "login" ? "Login" : "Signup";
+    mode === "login"
+      ? "Login"
+      : "Signup";
 
   document.getElementById("auth-submit").textContent =
-    mode === "login" ? "Login" : "Create Account";
+    mode === "login"
+      ? "Login"
+      : "Create Account";
 
   document.getElementById("auth-switch").textContent =
     mode === "login"
@@ -435,118 +445,415 @@ function setAuthMode(mode){
       : "Back to Login";
 }
 
+function syncUi(){
+
+  const loggedIn = Boolean(currentUser);
+
+  document.getElementById("auth-screen")
+    .classList.toggle("hidden",loggedIn);
+
+  document.getElementById("app-shell")
+    .classList.toggle("hidden",!loggedIn);
+
+  document.getElementById("user-pill").textContent =
+    loggedIn
+      ? currentUser.name
+      : "Guest";
+}
+
 function statusTag(status){
 
   return `
     <span class="tag ${
       status === "Done"
-      ? "done"
-      : status === "In Progress"
-      ? "progress"
-      : "todo"
+        ? "done"
+        : status === "In Progress"
+        ? "progress"
+        : "todo"
     }">
       ${status}
     </span>
   `;
 }
 
+function isProjectAdmin(project){
+
+  return (
+    currentUser &&
+    currentUser.name === project.admin
+  );
+}
+
 function updateStats(){
 
-  const total = tasks.length;
+  document.getElementById("stat-total")
+    .textContent = tasks.length;
 
-  const progress =
-    tasks.filter(t=>t.status==="In Progress").length;
+  document.getElementById("stat-progress")
+    .textContent =
+      tasks.filter(
+        t=>t.status==="In Progress"
+      ).length;
 
-  const done =
-    tasks.filter(t=>t.status==="Done").length;
+  document.getElementById("stat-done")
+    .textContent =
+      tasks.filter(
+        t=>t.status==="Done"
+      ).length;
 
-  const overdue =
-    tasks.filter(t=>t.status!=="Done").length;
+  document.getElementById("stat-projects")
+    .textContent = projects.length;
+}
 
-  document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-progress").textContent = progress;
-  document.getElementById("stat-done").textContent = done;
-  document.getElementById("stat-overdue").textContent = overdue;
+function renderProjects(){
+
+  tableBody.innerHTML = "";
+
+  projects.forEach(project=>{
+
+    const admin =
+      isProjectAdmin(project);
+
+    const row =
+      document.createElement("tr");
+
+    row.innerHTML = `
+
+      <td>
+        ${project.name}
+        <br>
+        <small>
+          Admin: ${project.admin}
+        </small>
+      </td>
+
+      <td>
+        ${project.members.join(", ")}
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <select
+                onchange="changeProjectStatus(${project.id},this.value)"
+              >
+                <option ${
+                  project.status==="To Do"
+                  ? "selected"
+                  : ""
+                }>
+                  To Do
+                </option>
+
+                <option ${
+                  project.status==="In Progress"
+                  ? "selected"
+                  : ""
+                }>
+                  In Progress
+                </option>
+
+                <option ${
+                  project.status==="Done"
+                  ? "selected"
+                  : ""
+                }>
+                  Done
+                </option>
+              </select>
+            `
+            : statusTag(project.status)
+        }
+
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <input
+                type="date"
+                value="${project.due}"
+                onchange="changeProjectDue(${project.id},this.value)"
+              />
+            `
+            : project.due
+        }
+
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <button
+                class="cta"
+                onclick="assignMember(${project.id})"
+              >
+                Assign
+              </button>
+            `
+            : "Only Admin"
+        }
+
+      </td>
+    `;
+
+    tableBody.appendChild(row);
+
+  });
+}
+
+function renderTasks(){
+
+  tableBody.innerHTML = "";
+
+  tasks.forEach(task=>{
+
+    const project =
+      projects.find(
+        p=>p.id===task.projectId
+      );
+
+    const admin =
+      project &&
+      isProjectAdmin(project);
+
+    const row =
+      document.createElement("tr");
+
+    row.innerHTML = `
+
+      <td>
+        ${task.title}
+        <br>
+        <small>
+          ${project.name}
+        </small>
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <select
+                onchange="changeAssignee(${task.id},this.value)"
+              >
+                ${teamMembers.map(member=>`
+
+                  <option
+                    value="${member}"
+                    ${
+                      task.assignee===member
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    ${member}
+                  </option>
+
+                `).join("")}
+              </select>
+            `
+            : task.assignee
+        }
+
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <select
+                onchange="changeTaskStatus(${task.id},this.value)"
+              >
+                <option ${
+                  task.status==="To Do"
+                  ? "selected"
+                  : ""
+                }>
+                  To Do
+                </option>
+
+                <option ${
+                  task.status==="In Progress"
+                  ? "selected"
+                  : ""
+                }>
+                  In Progress
+                </option>
+
+                <option ${
+                  task.status==="Done"
+                  ? "selected"
+                  : ""
+                }>
+                  Done
+                </option>
+              </select>
+            `
+            : statusTag(task.status)
+        }
+
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? `
+              <input
+                type="date"
+                value="${task.due}"
+                onchange="changeTaskDue(${task.id},this.value)"
+              />
+            `
+            : task.due
+        }
+
+      </td>
+
+      <td>
+
+        ${
+          admin
+            ? "Admin Access"
+            : "No Access"
+        }
+
+      </td>
+    `;
+
+    tableBody.appendChild(row);
+
+  });
 }
 
 function renderTable(view){
 
-  tableBody.innerHTML = "";
+  if(view==="projects"){
 
-  if(view === "projects"){
-
-    projects.forEach(project=>{
-
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td>${project.name}</td>
-        <td>${project.owner}</td>
-        <td>${statusTag(project.status)}</td>
-        <td>${project.due}</td>
-      `;
-
-      tableBody.appendChild(row);
-
-    });
-
+    renderProjects();
     return;
   }
 
-  if(view === "tasks" || view === "dashboard"){
+  renderTasks();
+}
 
-    tasks.forEach(task=>{
+function changeProjectStatus(id,value){
 
-      const project =
-        projects.find(p=>p.id===task.projectId);
+  const project =
+    projects.find(p=>p.id===id);
 
-      const row = document.createElement("tr");
+  if(!isProjectAdmin(project)) return;
 
-      row.innerHTML = `
-        <td>
-          ${task.task}
-          <br>
-          <small style="color:#94a3b8;">
-            ${project ? project.name : ""}
-          </small>
-        </td>
+  project.status = value;
 
-        <td>${task.assignee}</td>
+  renderProjects();
+}
 
-        <td>${statusTag(task.status)}</td>
+function changeProjectDue(id,value){
 
-        <td>${task.due}</td>
-      `;
+  const project =
+    projects.find(p=>p.id===id);
 
-      tableBody.appendChild(row);
+  if(!isProjectAdmin(project)) return;
 
-    });
+  project.due = value;
 
+  renderProjects();
+}
+
+function assignMember(projectId){
+
+  const project =
+    projects.find(p=>p.id===projectId);
+
+  if(!isProjectAdmin(project)) return;
+
+  const member =
+    prompt(
+      "Assign member:\n\n" +
+      teamMembers.join(", ")
+    );
+
+  if(!member) return;
+
+  if(!teamMembers.includes(member)){
+
+    alert("Invalid member");
     return;
   }
 
-  if(view === "team"){
+  if(!project.members.includes(member)){
 
-    teamMembers.forEach(member=>{
-
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td>${member}</td>
-        <td>-</td>
-        <td>${statusTag("Available")}</td>
-        <td>-</td>
-      `;
-
-      tableBody.appendChild(row);
-
-    });
+    project.members.push(member);
   }
+
+  renderProjects();
+}
+
+function changeTaskStatus(id,value){
+
+  const task =
+    tasks.find(t=>t.id===id);
+
+  const project =
+    projects.find(
+      p=>p.id===task.projectId
+    );
+
+  if(!isProjectAdmin(project)) return;
+
+  task.status = value;
+
+  renderTasks();
+}
+
+function changeTaskDue(id,value){
+
+  const task =
+    tasks.find(t=>t.id===id);
+
+  const project =
+    projects.find(
+      p=>p.id===task.projectId
+    );
+
+  if(!isProjectAdmin(project)) return;
+
+  task.due = value;
+
+  renderTasks();
+}
+
+function changeAssignee(id,value){
+
+  const task =
+    tasks.find(t=>t.id===id);
+
+  const project =
+    projects.find(
+      p=>p.id===task.projectId
+    );
+
+  if(!isProjectAdmin(project)) return;
+
+  task.assignee = value;
+
+  renderTasks();
 }
 
 nav.addEventListener("click",(e)=>{
 
-  const link = e.target.closest("a[data-view]");
+  const link =
+    e.target.closest("a[data-view]");
 
   if(!link || !currentUser) return;
 
@@ -557,25 +864,23 @@ nav.addEventListener("click",(e)=>{
 
   link.classList.add("active");
 
-  const viewKey = link.dataset.view;
+  const view =
+    link.dataset.view;
 
-  document.getElementById("view-title").textContent =
-    views[viewKey].title;
+  document.getElementById("view-title")
+    .textContent = views[view].title;
 
-  document.getElementById("view-subtitle").textContent =
-    views[viewKey].subtitle;
+  document.getElementById("view-subtitle")
+    .textContent = views[view].subtitle;
 
-  document.getElementById("table-title").textContent =
-    views[viewKey].tableTitle;
-
-  renderTable(viewKey);
+  renderTable(view);
 });
 
 document.getElementById("auth-switch")
 .addEventListener("click",()=>{
 
   setAuthMode(
-    authMode === "login"
+    authMode==="login"
       ? "signup"
       : "login"
   );
@@ -588,24 +893,21 @@ document.getElementById("auth-form")
 
   const name =
     document.getElementById("auth-name")
-    .value
-    .trim();
+    .value.trim();
 
   const email =
     document.getElementById("auth-email")
-    .value
-    .trim()
+    .value.trim()
     .toLowerCase();
 
   const password =
     document.getElementById("auth-password")
     .value;
 
-  const allUsers = users();
+  const allUsers =
+    users();
 
-  // SIGNUP
-
-  if(authMode === "signup"){
+  if(authMode==="signup"){
 
     if(!name){
 
@@ -617,10 +919,11 @@ document.getElementById("auth-form")
       return;
     }
 
-    const exists =
-      allUsers.some(u=>u.email===email);
-
-    if(exists){
+    if(
+      allUsers.some(
+        u=>u.email===email
+      )
+    ){
 
       setMessage(
         "Email already exists",
@@ -639,7 +942,7 @@ document.getElementById("auth-form")
     saveUsers(allUsers);
 
     setMessage(
-      "Signup successful. Please login.",
+      "Signup successful",
       "#9ff0b4"
     );
 
@@ -648,18 +951,17 @@ document.getElementById("auth-form")
     return;
   }
 
-  // LOGIN
-
-  const user = allUsers.find(
-    u =>
-      u.email===email &&
-      u.password===password
-  );
+  const user =
+    allUsers.find(
+      u =>
+        u.email===email &&
+        u.password===password
+    );
 
   if(!user){
 
     setMessage(
-      "Invalid email or password",
+      "Invalid credentials",
       "#ffb4b4"
     );
 
@@ -688,7 +990,9 @@ document.getElementById("logout-btn")
 
   currentUser = null;
 
-  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(
+    SESSION_KEY
+  );
 
   syncUi();
 });
@@ -698,19 +1002,27 @@ document.getElementById("new-project-btn")
 
   if(!currentUser) return;
 
-  const name = prompt("Project Name");
+  const name =
+    prompt("Project Name");
 
   if(!name) return;
 
   projects.push({
+
     id:projects.length + 1,
-    name,
-    owner:currentUser.name,
+
+    name:name,
+
+    admin:currentUser.name,
+
+    members:[],
+
     status:"To Do",
+
     due:"2026-05-30"
   });
 
-  renderTable("projects");
+  renderProjects();
 
   updateStats();
 });
@@ -720,27 +1032,81 @@ document.getElementById("new-task-btn")
 
   if(!currentUser) return;
 
-  const taskName = prompt("Task Name");
+  const title =
+    prompt("Task Name");
 
-  if(!taskName) return;
+  if(!title) return;
+
+  const projectId =
+    Number(
+      prompt(
+        "Project ID?"
+      )
+    );
+
+  const project =
+    projects.find(
+      p=>p.id===projectId
+    );
+
+  if(!project){
+
+    alert("Project not found");
+    return;
+  }
+
+  if(!isProjectAdmin(project)){
+
+    alert(
+      "Only project admin can create tasks"
+    );
+
+    return;
+  }
+
+  const assignee =
+    prompt(
+      "Assign To:\n\n" +
+      teamMembers.join(", ")
+    );
+
+  if(
+    !teamMembers.includes(
+      assignee
+    )
+  ){
+
+    alert("Invalid member");
+    return;
+  }
 
   tasks.push({
-    task:taskName,
-    projectId:1,
-    assignee:currentUser.name,
+
+    id:tasks.length + 1,
+
+    title,
+
+    projectId,
+
+    createdBy:currentUser.name,
+
+    assignee,
+
     status:"To Do",
+
     due:"2026-05-15"
   });
 
-  renderTable("tasks");
+  renderTasks();
 
   updateStats();
 });
 
 currentUser =
   JSON.parse(
-    localStorage.getItem(SESSION_KEY)
-    || "null"
+    localStorage.getItem(
+      SESSION_KEY
+    ) || "null"
   );
 
 setAuthMode("login");
