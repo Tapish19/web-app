@@ -12,7 +12,7 @@
       <div class="section-head"><h3 id="auth-title">Login</h3></div>
       <form id="auth-form">
         <p id="auth-message" style="min-height:20px;color:#9ec5ff;margin:0 0 8px"></p>
-        <p id="auth-name-row" style="display:none"><input id="auth-name" placeholder="Full name" style="width:100%;padding:8px;margin-bottom:8px" /></p>
+        <p><input id="auth-name" placeholder="Full name (required for signup)" style="width:100%;padding:8px;margin-bottom:8px" /></p>
         <p><input id="auth-email" type="email" placeholder="Email" required style="width:100%;padding:8px;margin-bottom:8px" /></p>
         <p><input id="auth-password" type="password" placeholder="Password" required style="width:100%;padding:8px;margin-bottom:8px" /></p>
         <button class="cta" type="submit" id="auth-submit">Login</button>
@@ -89,7 +89,7 @@ const syncUi=()=>{
   document.getElementById('user-pill').textContent=loggedIn?`${currentUser.name}`:'Guest';
 };
 const setMessage=(text,color='#9ec5ff')=>{const el=document.getElementById('auth-message');el.textContent=text;el.style.color=color;};
-const setAuthMode=(mode)=>{authMode=mode;const isLogin=mode==='login';document.getElementById('auth-title').textContent=isLogin?'Login':'Signup';document.getElementById('auth-submit').textContent=isLogin?'Login':'Create account';document.getElementById('auth-switch').textContent=isLogin?'Need Signup?':'Back to Login';document.getElementById('auth-name-row').style.display=isLogin?'none':'block';setMessage(isLogin?'Log in with your email and password.':'Create an account with name, email, and password.');};
+const setAuthMode=(mode)=>{authMode=mode;document.getElementById('auth-title').textContent=mode==='login'?'Login':'Signup';document.getElementById('auth-submit').textContent=mode==='login'?'Login':'Create account';document.getElementById('auth-switch').textContent=mode==='login'?'Need Signup?':'Back to Login';setMessage(mode==='login'?'Log in with your email and password.':'Create an account with name, email, and password.');};
 
 const renderTable=(viewKey)=>{
   tableBody.innerHTML='';
@@ -103,7 +103,7 @@ const renderTable=(viewKey)=>{
 
 nav.addEventListener('click',(event)=>{const link=event.target.closest('a[data-view]');if(!link||!currentUser)return;event.preventDefault();nav.querySelectorAll('a').forEach((a)=>a.classList.remove('active'));link.classList.add('active');const view=views[link.dataset.view];title.textContent=view.title;subtitle.textContent=view.subtitle;tableTitle.textContent=view.tableTitle;renderTable(link.dataset.view);});
 document.getElementById('new-project-btn').addEventListener('click',()=>{if(!currentUser) return;const name=prompt('Project name:');if(!name)return;projects.push({name,owner:currentUser.name,status:'To Do',due:'TBD'});if(nav.querySelector('a.active')?.dataset.view==='projects')renderTable('projects');alert(`Project "${name}" created. You are this project's admin.`);});
-document.getElementById('auth-switch').addEventListener('click',(event)=>{event.preventDefault();setAuthMode(authMode==='login'?'signup':'login');if(authMode==='login'){document.getElementById('auth-name').value='';}});
+document.getElementById('auth-switch').addEventListener('click',(event)=>{event.preventDefault();setAuthMode(authMode==='login'?'signup':'login');});
 document.getElementById('auth-form').addEventListener('submit',(event)=>{event.preventDefault();const name=document.getElementById('auth-name').value.trim();const email=document.getElementById('auth-email').value.trim().toLowerCase();const password=document.getElementById('auth-password').value;const allUsers=users();if(authMode==='signup'){if(!name)return setMessage('Name is required for signup.','#ffb4b4');if(allUsers.some((u)=>u.email===email))return setMessage('Email already registered.','#ffb4b4');allUsers.push({name,email,password});saveUsers(allUsers);currentUser={name,email};localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));setMessage('Signup successful. Redirecting...');syncUi();renderTable('dashboard');return;}const user=allUsers.find((u)=>u.email===email&&u.password===password);if(!user)return setMessage('Invalid email or password.','#ffb4b4');currentUser={name:user.name,email:user.email};localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));syncUi();renderTable('dashboard');});
 document.getElementById('logout-btn').addEventListener('click',()=>{currentUser=null;localStorage.removeItem(SESSION_KEY);syncUi();});
 document.getElementById('view-all-btn').addEventListener('click',()=>alert('Tip: Open the Projects tab to create and assign projects.'));
