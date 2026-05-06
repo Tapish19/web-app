@@ -89,7 +89,7 @@ const syncUi=()=>{
   document.getElementById('user-pill').textContent=loggedIn?`${currentUser.name}`:'Guest';
 };
 const setMessage=(text,color='#9ec5ff')=>{const el=document.getElementById('auth-message');el.textContent=text;el.style.color=color;};
-const setAuthMode=(mode)=>{authMode=mode;document.getElementById('auth-title').textContent=mode==='login'?'Login':'Signup';document.getElementById('auth-submit').textContent=mode==='login'?'Login':'Create account';document.getElementById('auth-switch').textContent=mode==='login'?'Need Signup?':'Back to Login';setMessage(mode==='login'?'Log in with your email and password.':'Create an account with name, email, and password.');};
+const setAuthMode=(mode)=>{authMode=mode;const nameInput=document.getElementById('auth-name');document.getElementById('auth-title').textContent=mode==='login'?'Login':'Signup';document.getElementById('auth-submit').textContent=mode==='login'?'Login':'Create account';document.getElementById('auth-switch').textContent=mode==='login'?'Need Signup?':'Back to Login';nameInput.required=mode==='signup';nameInput.style.display=mode==='signup'?'block':'none';if(mode==='login')nameInput.value='';setMessage(mode==='login'?'Log in with your email and password.':'Create an account with name, email, and password.');};
 
 const renderTable=(viewKey)=>{
   tableBody.innerHTML='';
