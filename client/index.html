@@ -31,6 +31,7 @@
         <a href="#" data-view="team">Team</a>
       </nav>
       <button class="cta" id="new-project-btn">+ New Project</button>
+      <button class="cta" id="new-task-btn" style="margin-top:8px">+ New Task</button>
     </aside>
 
     <main class="content">
@@ -85,6 +86,7 @@ let authMode='login'; let currentUser=null;
 const users=()=>JSON.parse(localStorage.getItem(USERS_KEY)||'[]');
 const saveUsers=(value)=>localStorage.setItem(USERS_KEY,JSON.stringify(value));
 const canManageProject=(project)=>currentUser && project.owner===currentUser.name;
+const isProjectAdmin=()=>projects.some((project)=>canManageProject(project));
 
 const nav=document.getElementById('sidebar-nav'); const title=document.getElementById('view-title'); const subtitle=document.getElementById('view-subtitle'); const tableTitle=document.getElementById('table-title'); const tableBody=document.getElementById('table-body');
 
