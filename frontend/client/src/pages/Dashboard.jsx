@@ -8,17 +8,18 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const loadProjects = async () => {
+      const res = await API.get("/projects");
+      setProjects(res.data);
+    };
 
-  const fetchProjects = async () => {
-    const res = await API.get("/projects");
-    setProjects(res.data);
-  };
+    loadProjects();
+  }, []);
 
   const createProject = async () => {
     await API.post("/projects", { title });
-    fetchProjects();
+    const res = await API.get("/projects");
+    setProjects(res.data);
   };
 
   return (
