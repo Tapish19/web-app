@@ -15,12 +15,11 @@ export default function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route index element={<Login />} />
+        <Route path="signup" element={<Signup />} />
 
         <Route
-          path="/dashboard"
+          path="dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
@@ -29,7 +28,7 @@ export default function App() {
         />
 
         <Route
-          path="/project/:id"
+          path="project/:id"
           element={
             <PrivateRoute>
               <Project />

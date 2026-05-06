@@ -13,11 +13,8 @@ export default function Signup() {
     try {
       setError("");
       setSubmitting(true);
-      const signupRes = await API.post("/auth/signup", form);
-      const token = signupRes?.data?.token;
-      if (!token) throw new Error("Signup succeeded but no auth token returned.");
-      localStorage.setItem("token", token);
-      navigate("/dashboard");
+      await API.post("/auth/signup", form);
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.msg || "Signup failed. Please try again.");
     } finally {
