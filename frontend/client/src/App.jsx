@@ -7,7 +7,7 @@ import Navbar from "./components/Navbar";
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/" />;
+  return token ? children : <Navigate to="/login" />;
 };
 
 export default function App() {
@@ -15,7 +15,8 @@ export default function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
         <Route
