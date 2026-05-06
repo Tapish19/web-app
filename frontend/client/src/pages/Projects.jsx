@@ -11,21 +11,26 @@ export default function Project() {
   const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
-    fetchProjectAndTasks();
+    const load = async () => {
+      const [projectsRes, tasksRes] = await Promise.all([
+        API.get("/projects"),
+        API.get(`/tasks/project/${id}`)
+      ]);
+
+      const currentProject = projectsRes.data.find((p) => p._id === id) || null;
+      setProject(currentProject);
+      if (currentProject?.members?.length) {
+        setAssignedTo((prev) => prev || currentProject.members[0]._id);
+      }
+
+      setTasks(tasksRes.data);
+    };
+
+    load();
   }, [id]);
 
-  const fetchProjectAndTasks = async () => {
-    const [projectsRes, tasksRes] = await Promise.all([
-      API.get("/projects"),
-      API.get(`/tasks/project/${id}`)
-    ]);
-
-    const currentProject = projectsRes.data.find((p) => p._id === id) || null;
-    setProject(currentProject);
-    if (currentProject?.members?.length && !assignedTo) {
-      setAssignedTo(currentProject.members[0]._id);
-    }
-
+  const refreshTasks = async () => {
+    const tasksRes = await API.get(`/tasks/project/${id}`);
     setTasks(tasksRes.data);
   };
 
@@ -34,18 +39,18 @@ export default function Project() {
 
     await API.post("/tasks", { title: title.trim(), projectId: id, assignedTo, dueDate });
     setTitle("");
-    fetchProjectAndTasks();
+    refreshTasks();
   };
 
   const updateStatus = async (taskId, status) => {
     await API.put(`/tasks/${taskId}`, { status });
-    fetchProjectAndTasks();
+    refreshTasks();
   };
 
   const updateDueDate = async (taskId, nextDueDate) => {
     if (!nextDueDate) return;
     await API.put(`/tasks/${taskId}`, { dueDate: nextDueDate });
-    fetchProjectAndTasks();
+    refreshTasks();
   };
 
   return (
