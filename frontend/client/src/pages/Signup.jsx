@@ -1,6 +1,6 @@
 import { useState } from "react";
 import API from "../services/api";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [form, setForm] = useState({ role: "member" });
@@ -13,7 +13,7 @@ export default function Signup() {
       setError("");
       setSubmitting(true);
       await API.post("/auth/signup", form);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.msg || "Signup failed. Please try again.");
     } finally {
