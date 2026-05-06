@@ -42,10 +42,10 @@
         <div class="user-pill" id="user-pill"></div>
       </header>
       <section class="stats-grid" id="stats-grid">
-        <article class="card stat"><h3>Total Tasks</h3><p>38</p></article>
-        <article class="card stat"><h3>In Progress</h3><p>14</p></article>
-        <article class="card stat"><h3>Done</h3><p>19</p></article>
-        <article class="card stat danger"><h3>Overdue</h3><p>5</p></article>
+        <article class="card stat"><h3>Total Tasks</h3><p id="stat-total">0</p></article>
+        <article class="card stat"><h3>In Progress</h3><p id="stat-progress">0</p></article>
+        <article class="card stat"><h3>Done</h3><p id="stat-done">0</p></article>
+        <article class="card stat danger"><h3>Overdue</h3><p id="stat-overdue">0</p></article>
       </section>
 
       <section class="card" id="data-card">
@@ -69,9 +69,15 @@ const projects=[
   { name:'Website Revamp', owner:'Rina', status:'In Progress', due:'May 22' },
   { name:'Mobile App', owner:'Lee', status:'To Do', due:'Jun 3' }
 ];
+const tasks=[
+  { task:'Set up auth flow', assignee:'Rina', status:'To Do', due:'2026-05-08' },
+  { task:'Project API endpoints', assignee:'Lee', status:'In Progress', due:'2026-05-06' },
+  { task:'Dashboard charts', assignee:'Maya', status:'Done', due:'2026-05-04' },
+  { task:'Design landing page', assignee:'Arun', status:'In Progress', due:'2026-05-09' },
+  { task:'Fix login redirect', assignee:'Nina', status:'To Do', due:'2026-05-07' },
+  { task:'Write tests', assignee:'Lee', status:'Done', due:'2026-05-03' }
+];
 const tableData={
-  dashboard:[['Set up auth flow','Rina','<span class="tag todo">To Do</span>','May 8'],['Project API endpoints','Lee','<span class="tag progress">In Progress</span>','May 6'],['Dashboard charts','Maya','<span class="tag done">Done</span>','May 4']],
-  tasks:[['Design landing page','Arun','<span class="tag progress">In Progress</span>','May 9'],['Fix login redirect','Nina','<span class="tag todo">To Do</span>','May 7'],['Write tests','Lee','<span class="tag done">Done</span>','May 3']],
   team:teamMembers.map((m)=>[m,'2 active tasks','<span class="tag progress">Available</span>','-'])
 };
 const views={dashboard:{title:'Welcome back 👋',subtitle:'Track progress, assignments, and overdue work in one place.',tableTitle:'Recent Tasks'},projects:{title:'Projects',subtitle:'Manage timelines, owners, and delivery status.',tableTitle:'Active Projects'},tasks:{title:'Tasks',subtitle:'Review and update task progress by assignee.',tableTitle:'All Tasks'},team:{title:'Team',subtitle:'See contributors and current workload.',tableTitle:'Team Activity'}};
@@ -91,6 +97,21 @@ const syncUi=()=>{
 const setMessage=(text,color='#9ec5ff')=>{const el=document.getElementById('auth-message');el.textContent=text;el.style.color=color;};
 const setAuthMode=(mode)=>{authMode=mode;document.getElementById('auth-title').textContent=mode==='login'?'Login':'Signup';document.getElementById('auth-submit').textContent=mode==='login'?'Login':'Create account';document.getElementById('auth-switch').textContent=mode==='login'?'Need Signup?':'Back to Login';setMessage(mode==='login'?'Log in with your email and password.':'Create an account with name, email, and password.');};
 
+
+const statusTag=(status)=>`<span class="tag ${status==='Done'?'done':status==='In Progress'?'progress':'todo'}">${status}</span>`;
+const formatDue=(iso)=>new Date(`${iso}T00:00:00Z`).toLocaleDateString();
+const updateStats=()=>{
+  const now=new Date(); now.setUTCHours(0,0,0,0);
+  const total=tasks.length;
+  const progress=tasks.filter((t)=>t.status==='In Progress').length;
+  const done=tasks.filter((t)=>t.status==='Done').length;
+  const overdue=tasks.filter((t)=>t.status!=='Done'&&new Date(`${t.due}T00:00:00Z`)<now).length;
+  document.getElementById('stat-total').textContent=String(total);
+  document.getElementById('stat-progress').textContent=String(progress);
+  document.getElementById('stat-done').textContent=String(done);
+  document.getElementById('stat-overdue').textContent=String(overdue);
+};
+
 const renderTable=(viewKey)=>{
   tableBody.innerHTML='';
   if(viewKey==='projects'){
@@ -98,16 +119,17 @@ const renderTable=(viewKey)=>{
     document.querySelectorAll('.assign-btn').forEach((button)=>button.addEventListener('click',()=>{const index=Number(button.dataset.projectIndex);const project=projects[index];if(!canManageProject(project)) return alert("Only this project's admin can assign this project.");const selected=prompt(`Assign project owner (${teamMembers.join(', ')}):`,project.owner);if(!selected||!teamMembers.includes(selected))return alert(`Please use one of: ${teamMembers.join(', ')}`);project.owner=selected;renderTable('projects');}));
     return;
   }
-  (tableData[viewKey]||tableData.dashboard).forEach((cells)=>{const row=document.createElement('tr');row.innerHTML=`<td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${cells[3]}</td>`;tableBody.appendChild(row);});
+  if(viewKey==='dashboard'||viewKey==='tasks'){const list=viewKey==='dashboard'?tasks.slice(0,5):tasks;list.forEach((item)=>{const row=document.createElement('tr');row.innerHTML=`<td>${item.task}</td><td>${item.assignee}</td><td>${statusTag(item.status)}</td><td>${formatDue(item.due)}</td>`;tableBody.appendChild(row);});return;}
+  (tableData[viewKey]||[]).forEach((cells)=>{const row=document.createElement('tr');row.innerHTML=`<td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${cells[3]}</td>`;tableBody.appendChild(row);});
 };
 
-nav.addEventListener('click',(event)=>{const link=event.target.closest('a[data-view]');if(!link||!currentUser)return;event.preventDefault();nav.querySelectorAll('a').forEach((a)=>a.classList.remove('active'));link.classList.add('active');const view=views[link.dataset.view];title.textContent=view.title;subtitle.textContent=view.subtitle;tableTitle.textContent=view.tableTitle;renderTable(link.dataset.view);});
-document.getElementById('new-project-btn').addEventListener('click',()=>{if(!currentUser) return;const name=prompt('Project name:');if(!name)return;projects.push({name,owner:currentUser.name,status:'To Do',due:'TBD'});if(nav.querySelector('a.active')?.dataset.view==='projects')renderTable('projects');alert(`Project "${name}" created. You are this project's admin.`);});
+nav.addEventListener('click',(event)=>{const link=event.target.closest('a[data-view]');if(!link||!currentUser)return;event.preventDefault();nav.querySelectorAll('a').forEach((a)=>a.classList.remove('active'));link.classList.add('active');const view=views[link.dataset.view];title.textContent=view.title;subtitle.textContent=view.subtitle;tableTitle.textContent=view.tableTitle;renderTable(link.dataset.view);updateStats();});
+document.getElementById('new-project-btn').addEventListener('click',()=>{if(!currentUser) return;const name=prompt('Project name:');if(!name)return;projects.push({name,owner:currentUser.name,status:'To Do',due:'TBD'});if(nav.querySelector('a.active')?.dataset.view==='projects')renderTable('projects');updateStats();alert(`Project "${name}" created. You are this project's admin.`);});
 document.getElementById('auth-switch').addEventListener('click',(event)=>{event.preventDefault();setAuthMode(authMode==='login'?'signup':'login');});
 document.getElementById('auth-form').addEventListener('submit',(event)=>{event.preventDefault();const name=document.getElementById('auth-name').value.trim();const email=document.getElementById('auth-email').value.trim().toLowerCase();const password=document.getElementById('auth-password').value;const allUsers=users();if(authMode==='signup'){if(!name)return setMessage('Name is required for signup.','#ffb4b4');if(allUsers.some((u)=>u.email===email))return setMessage('Email already registered.','#ffb4b4');allUsers.push({name,email,password});saveUsers(allUsers);setAuthMode('login');document.getElementById('auth-name').value='';document.getElementById('auth-password').value='';setMessage('Signup successful. Please log in.','#9ff0b4');return;}const user=allUsers.find((u)=>u.email===email&&u.password===password);if(!user)return setMessage('Invalid email or password.','#ffb4b4');currentUser={name:user.name,email:user.email};localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));syncUi();renderTable('dashboard');});
 document.getElementById('logout-btn').addEventListener('click',()=>{currentUser=null;localStorage.removeItem(SESSION_KEY);syncUi();});
 document.getElementById('view-all-btn').addEventListener('click',()=>alert('Tip: Open the Projects tab to create and assign projects.'));
-currentUser=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); setAuthMode('login'); syncUi(); if(currentUser) renderTable('dashboard');
+currentUser=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); setAuthMode('login'); syncUi(); if(currentUser) renderTable('dashboard'); updateStats();
 </script>
 </body>
 </html>
