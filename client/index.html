@@ -71,12 +71,12 @@ const projects=[
   { name:'Mobile App', owner:'Lee', status:'To Do', due:'Jun 3' }
 ];
 const tasks=[
-  { id:1, task:'Set up auth flow', assignee:'Rina', status:'To Do', due:'2026-05-08' },
-  { id:2, task:'Project API endpoints', assignee:'Lee', status:'In Progress', due:'2026-05-06' },
-  { id:3, task:'Dashboard charts', assignee:'Maya', status:'Done', due:'2026-05-04' },
-  { id:4, task:'Design landing page', assignee:'Arun', status:'In Progress', due:'2026-05-09' },
-  { id:5, task:'Fix login redirect', assignee:'Nina', status:'To Do', due:'2026-05-07' },
-  { id:6, task:'Write tests', assignee:'Lee', status:'Done', due:'2026-05-03' }
+  { task:'Set up auth flow', assignee:'Rina', status:'To Do', due:'2026-05-08' },
+  { task:'Project API endpoints', assignee:'Lee', status:'In Progress', due:'2026-05-06' },
+  { task:'Dashboard charts', assignee:'Maya', status:'Done', due:'2026-05-04' },
+  { task:'Design landing page', assignee:'Arun', status:'In Progress', due:'2026-05-09' },
+  { task:'Fix login redirect', assignee:'Nina', status:'To Do', due:'2026-05-07' },
+  { task:'Write tests', assignee:'Lee', status:'Done', due:'2026-05-03' }
 ];
 const tableData={
   team:teamMembers.map((m)=>[m,'2 active tasks','<span class="tag progress">Available</span>','-'])
@@ -121,17 +121,14 @@ const renderTable=(viewKey)=>{
     document.querySelectorAll('.assign-btn').forEach((button)=>button.addEventListener('click',()=>{const index=Number(button.dataset.projectIndex);const project=projects[index];if(!canManageProject(project)) return alert("Only this project's admin can assign this project.");const selected=prompt(`Assign project owner (${teamMembers.join(', ')}):`,project.owner);if(!selected||!teamMembers.includes(selected))return alert(`Please use one of: ${teamMembers.join(', ')}`);project.owner=selected;renderTable('projects');}));
     return;
   }
-  if(viewKey==='dashboard'||viewKey==='tasks'){const list=viewKey==='dashboard'?tasks.slice(0,5):tasks;list.forEach((item)=>{const row=document.createElement('tr');if(viewKey==='tasks'&&isProjectAdmin()){row.innerHTML=`<td>${item.task}</td><td>${item.assignee}</td><td><select data-task-id="${item.id}" class="task-status"><option ${item.status==='To Do'?'selected':''}>To Do</option><option ${item.status==='In Progress'?'selected':''}>In Progress</option><option ${item.status==='Done'?'selected':''}>Done</option></select></td><td><input type="date" value="${item.due}" data-task-due-id="${item.id}" class="task-due"></td>`;}else{row.innerHTML=`<td>${item.task}</td><td>${item.assignee}</td><td>${statusTag(item.status)}</td><td>${formatDue(item.due)}</td>`;}tableBody.appendChild(row);});
-    if(viewKey==='tasks'&&isProjectAdmin()){document.querySelectorAll('.task-status').forEach((el)=>el.addEventListener('change',()=>{const task=tasks.find((t)=>t.id===Number(el.dataset.taskId));if(!task)return;task.status=el.value;updateStats();renderTable('tasks');}));document.querySelectorAll('.task-due').forEach((el)=>el.addEventListener('change',()=>{const task=tasks.find((t)=>t.id===Number(el.dataset.taskDueId));if(!task)return;task.due=el.value;updateStats();renderTable('tasks');}));}
-    return;}
+  if(viewKey==='dashboard'||viewKey==='tasks'){const list=viewKey==='dashboard'?tasks.slice(0,5):tasks;list.forEach((item)=>{const row=document.createElement('tr');row.innerHTML=`<td>${item.task}</td><td>${item.assignee}</td><td>${statusTag(item.status)}</td><td>${formatDue(item.due)}</td>`;tableBody.appendChild(row);});return;}
   (tableData[viewKey]||[]).forEach((cells)=>{const row=document.createElement('tr');row.innerHTML=`<td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${cells[3]}</td>`;tableBody.appendChild(row);});
 };
 
 nav.addEventListener('click',(event)=>{const link=event.target.closest('a[data-view]');if(!link||!currentUser)return;event.preventDefault();nav.querySelectorAll('a').forEach((a)=>a.classList.remove('active'));link.classList.add('active');const view=views[link.dataset.view];title.textContent=view.title;subtitle.textContent=view.subtitle;tableTitle.textContent=view.tableTitle;renderTable(link.dataset.view);updateStats();});
 document.getElementById('new-project-btn').addEventListener('click',()=>{if(!currentUser) return;const name=prompt('Project name:');if(!name)return;projects.push({name,owner:currentUser.name,status:'To Do',due:'TBD'});if(nav.querySelector('a.active')?.dataset.view==='projects')renderTable('projects');updateStats();alert(`Project "${name}" created. You are this project's admin.`);});
-document.getElementById('new-task-btn').addEventListener('click',()=>{if(!currentUser) return;const task=prompt('Task name:');if(!task)return;const assignee=prompt(`Assignee (${teamMembers.join(', ')}):`,currentUser.name)||currentUser.name;const due=prompt('Due date (YYYY-MM-DD):',new Date().toISOString().slice(0,10));if(!due)return;tasks.push({id:Date.now(),task,assignee,status:'To Do',due});const active=nav.querySelector('a.active')?.dataset.view;if(active==='tasks'||active==='dashboard')renderTable(active);updateStats();});
 document.getElementById('auth-switch').addEventListener('click',(event)=>{event.preventDefault();setAuthMode(authMode==='login'?'signup':'login');});
-document.getElementById('auth-form').addEventListener('submit',(event)=>{event.preventDefault();const name=document.getElementById('auth-name').value.trim();const email=document.getElementById('auth-email').value.trim().toLowerCase();const password=document.getElementById('auth-password').value;const allUsers=users();if(authMode==='signup'){if(!name)return setMessage('Name is required for signup.','#ffb4b4');if(allUsers.some((u)=>u.email===email))return setMessage('Email already registered.','#ffb4b4');allUsers.push({name,email,password});saveUsers(allUsers);setAuthMode('login');document.getElementById('auth-name').value='';document.getElementById('auth-password').value='';setMessage('Signup successful. Please log in.','#9ff0b4');return;}const user=allUsers.find((u)=>u.email===email&&u.password===password);if(!user)return setMessage('Invalid email or password.','#ffb4b4');currentUser={name:user.name,email:user.email};localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));syncUi();renderTable('dashboard');updateStats();});
+document.getElementById('auth-form').addEventListener('submit',(event)=>{event.preventDefault();const name=document.getElementById('auth-name').value.trim();const email=document.getElementById('auth-email').value.trim().toLowerCase();const password=document.getElementById('auth-password').value;const allUsers=users();if(authMode==='signup'){if(!name)return setMessage('Name is required for signup.','#ffb4b4');if(allUsers.some((u)=>u.email===email))return setMessage('Email already registered.','#ffb4b4');allUsers.push({name,email,password});saveUsers(allUsers);setAuthMode('login');document.getElementById('auth-name').value='';document.getElementById('auth-password').value='';setMessage('Signup successful. Please log in.','#9ff0b4');return;}const user=allUsers.find((u)=>u.email===email&&u.password===password);if(!user)return setMessage('Invalid email or password.','#ffb4b4');currentUser={name:user.name,email:user.email};localStorage.setItem(SESSION_KEY,JSON.stringify(currentUser));syncUi();renderTable('dashboard');});
 document.getElementById('logout-btn').addEventListener('click',()=>{currentUser=null;localStorage.removeItem(SESSION_KEY);syncUi();});
 document.getElementById('view-all-btn').addEventListener('click',()=>alert('Tip: Open the Projects tab to create and assign projects.'));
 currentUser=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); setAuthMode('login'); syncUi(); if(currentUser) renderTable('dashboard'); updateStats();
