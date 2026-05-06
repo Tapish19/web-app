@@ -941,15 +941,23 @@ document.getElementById("auth-form")
 
     saveUsers(allUsers);
 
-    setMessage(
-      "Signup successful",
-      "#9ff0b4"
-    );
+localStorage.removeItem(SESSION_KEY);
 
-    setAuthMode("login");
+currentUser = null;
 
-    return;
-  }
+setMessage(
+  "Signup successful. Please login.",
+  "#9ff0b4"
+);
+
+setAuthMode("login");
+
+document.getElementById("auth-password").value = "";
+document.getElementById("auth-email").value = "";
+
+syncUi();
+
+return;
 
   const user =
     allUsers.find(
