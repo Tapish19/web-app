@@ -20,11 +20,15 @@ router.post("/signup", async (req, res) => {
         const hashed = await bcrypt.hash(password, 10);
         const user = await User.create({ name, email, password: hashed, role });
 
+        const token = jwt.sign(
+            { id: user._id.toString(), role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "24h" }
+        );
+
         res.status(201).json({
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role
+            token,
+            user: { id: user._id, name: user.name, role: user.role, email: user.email }
         });
     } catch (error) {
         res.status(500).json({ msg: "Signup failed", error: error.message });

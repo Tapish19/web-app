@@ -8,7 +8,8 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const signup = async () => {
+  const signup = async (e) => {
+    e.preventDefault();
     try {
       setError("");
       setSubmitting(true);
@@ -22,7 +23,7 @@ export default function Signup() {
   };
 
   return (
-    <div>
+    <form onSubmit={signup}>
       <h2>Signup</h2>
       <input placeholder="Name" onChange={e => setForm({ ...form, name: e.target.value })} />
       <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
@@ -33,8 +34,8 @@ export default function Signup() {
         <option value="admin">Admin</option>
       </select>
 
-      <button onClick={signup} disabled={submitting}>{submitting ? "Signing up..." : "Signup"}</button>
+      <button type="submit" disabled={submitting}>{submitting ? "Signing up..." : "Signup"}</button>
       {error && <p>{error}</p>}
-    </div>
+    </form>
   );
 }
