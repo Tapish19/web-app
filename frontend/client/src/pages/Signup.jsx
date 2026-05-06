@@ -1,29 +1,36 @@
 import { useState } from "react";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({ role: "member" });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const signup = async () => {
-    await API.post("/auth/signup", form);
-    navigate("/");
+    try {
+      setError("");
+      setSubmitting(true);
+      await API.post("/auth/signup", form);
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.msg || "Signup failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div>
       <h2>Signup</h2>
-      <input placeholder="Name" onChange={e => setForm({...form, name: e.target.value})} />
-      <input placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
-      <input placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
-      
-      <select onChange={e => setForm({...form, role: e.target.value})}>
-        <option value="Member">Member</option>
-        <option value="Admin">Admin</option>
-      </select>
+      <input placeholder="Name" onChange={e => setForm({ ...form, name: e.target.value })} />
+      <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
+      <input type="password" placeholder="Password" onChange={e => setForm({ ...form, password: e.target.value })} />
 
-      <button onClick={signup}>Signup</button>
+      <button onClick={signup} disabled={submitting}>{submitting ? "Signing up..." : "Signup"}</button>
+      {error && <p>{error}</p>}
+      <p>Already have an account? <Link to="/">Login</Link></p>
     </div>
   );
 }
