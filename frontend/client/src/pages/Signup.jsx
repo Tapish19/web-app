@@ -13,8 +13,9 @@ export default function Signup() {
     try {
       setError("");
       setSubmitting(true);
-      await API.post("/auth/signup", form);
-      navigate("/login");
+      const res = await API.post("/auth/signup", form);
+      localStorage.setItem("token", res.data.token);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.msg || "Signup failed. Please try again.");
     } finally {
