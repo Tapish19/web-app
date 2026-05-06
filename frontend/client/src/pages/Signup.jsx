@@ -28,9 +28,13 @@ export default function Signup() {
       <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
       <input type="password" placeholder="Password" onChange={e => setForm({ ...form, password: e.target.value })} />
 
+      <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
+        <option value="member">Member</option>
+        <option value="admin">Admin</option>
+      </select>
+
       <button onClick={signup} disabled={submitting}>{submitting ? "Signing up..." : "Signup"}</button>
       {error && <p>{error}</p>}
-      <p>Already have an account? <Link to="/">Login</Link></p>
     </div>
   );
 }
