@@ -20,6 +20,10 @@
       min-height:100vh;
     }
 
+    .hidden{
+      display:none !important;
+    }
+
     .app-shell{
       display:grid;
       grid-template-columns:260px 1fr;
@@ -39,6 +43,7 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+      margin-bottom:20px;
     }
 
     .sidebar nav a{
@@ -83,7 +88,7 @@
     }
 
     .stat p{
-      font-size:32px;
+      font-size:30px;
       margin-top:10px;
     }
 
@@ -93,25 +98,30 @@
     }
 
     th,td{
-      border-bottom:1px solid #334155;
       padding:12px;
+      border-bottom:1px solid #334155;
       text-align:left;
     }
 
-    button{
-      border:none;
-      cursor:pointer;
-    }
-
     .cta{
+      border:none;
       background:#2563eb;
       color:white;
       padding:10px 14px;
       border-radius:8px;
+      cursor:pointer;
     }
 
     .danger{
       background:#dc2626;
+    }
+
+    input,select{
+      background:#334155;
+      color:white;
+      border:none;
+      padding:8px;
+      border-radius:8px;
     }
 
     .tag{
@@ -132,21 +142,9 @@
       background:#166534;
     }
 
-    input,select{
-      background:#334155;
-      color:white;
-      border:none;
-      padding:8px;
-      border-radius:8px;
-    }
-
     #auth-screen{
       max-width:500px;
       margin:60px auto;
-    }
-
-    .hidden{
-      display:none;
     }
 
   </style>
@@ -154,7 +152,7 @@
 
 <body>
 
-<!-- LOGIN / SIGNUP -->
+<!-- AUTH -->
 
 <div id="auth-screen">
 
@@ -237,8 +235,6 @@
 
     </nav>
 
-    <br>
-
     <button class="cta" id="new-project-btn">
       + New Project
     </button>
@@ -258,13 +254,15 @@
     <div class="card topbar">
 
       <div>
+
         <h2 id="view-title">
           Dashboard
         </h2>
 
         <p id="view-subtitle">
-          Manage projects and tasks
+          Overview of your tasks
         </p>
+
       </div>
 
       <div>
@@ -316,7 +314,7 @@
     <section class="card">
 
       <h3 id="table-title">
-        Recent Tasks
+        Tasks
       </h3>
 
       <br>
@@ -324,6 +322,7 @@
       <table>
 
         <thead>
+
           <tr>
             <th>Name</th>
             <th>Assigned</th>
@@ -331,6 +330,7 @@
             <th>Due</th>
             <th>Actions</th>
           </tr>
+
         </thead>
 
         <tbody id="table-body"></tbody>
@@ -386,17 +386,17 @@ const views = {
 
   dashboard:{
     title:"Dashboard",
-    subtitle:"Overview of tasks"
+    subtitle:"Overview of all tasks"
   },
 
   projects:{
     title:"Projects",
-    subtitle:"Manage all projects"
+    subtitle:"Manage projects"
   },
 
   tasks:{
     title:"Tasks",
-    subtitle:"Manage all tasks"
+    subtitle:"Manage tasks"
   }
 
 };
@@ -405,12 +405,14 @@ const nav = document.getElementById("sidebar-nav");
 const tableBody = document.getElementById("table-body");
 
 function users(){
+
   return JSON.parse(
     localStorage.getItem(USERS_KEY) || "[]"
   );
 }
 
 function saveUsers(data){
+
   localStorage.setItem(
     USERS_KEY,
     JSON.stringify(data)
@@ -419,7 +421,8 @@ function saveUsers(data){
 
 function setMessage(text,color="#9ec5ff"){
 
-  const el = document.getElementById("auth-message");
+  const el =
+    document.getElementById("auth-message");
 
   el.textContent = text;
   el.style.color = color;
@@ -447,7 +450,8 @@ function setAuthMode(mode){
 
 function syncUi(){
 
-  const loggedIn = Boolean(currentUser);
+  const loggedIn =
+    Boolean(currentUser);
 
   document.getElementById("auth-screen")
     .classList.toggle("hidden",loggedIn);
@@ -455,10 +459,11 @@ function syncUi(){
   document.getElementById("app-shell")
     .classList.toggle("hidden",!loggedIn);
 
-  document.getElementById("user-pill").textContent =
-    loggedIn
-      ? currentUser.name
-      : "Guest";
+  document.getElementById("user-pill")
+    .textContent =
+      loggedIn
+        ? currentUser.name
+        : "Guest";
 }
 
 function statusTag(status){
@@ -536,32 +541,29 @@ function renderProjects(){
         ${
           admin
             ? `
-              <select
-                onchange="changeProjectStatus(${project.id},this.value)"
-              >
-                <option ${
-                  project.status==="To Do"
-                  ? "selected"
-                  : ""
-                }>
+              <select onchange="changeProjectStatus(${project.id},this.value)">
+
+                <option
+                  value="To Do"
+                  ${project.status==="To Do"?"selected":""}
+                >
                   To Do
                 </option>
 
-                <option ${
-                  project.status==="In Progress"
-                  ? "selected"
-                  : ""
-                }>
+                <option
+                  value="In Progress"
+                  ${project.status==="In Progress"?"selected":""}
+                >
                   In Progress
                 </option>
 
-                <option ${
-                  project.status==="Done"
-                  ? "selected"
-                  : ""
-                }>
+                <option
+                  value="Done"
+                  ${project.status==="Done"?"selected":""}
+                >
                   Done
                 </option>
+
               </select>
             `
             : statusTag(project.status)
@@ -641,23 +643,19 @@ function renderTasks(){
         ${
           admin
             ? `
-              <select
-                onchange="changeAssignee(${task.id},this.value)"
-              >
+              <select onchange="changeAssignee(${task.id},this.value)">
+
                 ${teamMembers.map(member=>`
 
                   <option
                     value="${member}"
-                    ${
-                      task.assignee===member
-                        ? "selected"
-                        : ""
-                    }
+                    ${task.assignee===member?"selected":""}
                   >
                     ${member}
                   </option>
 
                 `).join("")}
+
               </select>
             `
             : task.assignee
@@ -670,32 +668,29 @@ function renderTasks(){
         ${
           admin
             ? `
-              <select
-                onchange="changeTaskStatus(${task.id},this.value)"
-              >
-                <option ${
-                  task.status==="To Do"
-                  ? "selected"
-                  : ""
-                }>
+              <select onchange="changeTaskStatus(${task.id},this.value)">
+
+                <option
+                  value="To Do"
+                  ${task.status==="To Do"?"selected":""}
+                >
                   To Do
                 </option>
 
-                <option ${
-                  task.status==="In Progress"
-                  ? "selected"
-                  : ""
-                }>
+                <option
+                  value="In Progress"
+                  ${task.status==="In Progress"?"selected":""}
+                >
                   In Progress
                 </option>
 
-                <option ${
-                  task.status==="Done"
-                  ? "selected"
-                  : ""
-                }>
+                <option
+                  value="Done"
+                  ${task.status==="Done"?"selected":""}
+                >
                   Done
                 </option>
+
               </select>
             `
             : statusTag(task.status)
@@ -720,13 +715,7 @@ function renderTasks(){
       </td>
 
       <td>
-
-        ${
-          admin
-            ? "Admin Access"
-            : "No Access"
-        }
-
+        ${admin ? "Admin Access" : "No Access"}
       </td>
     `;
 
@@ -737,7 +726,7 @@ function renderTasks(){
 
 function renderTable(view){
 
-  if(view==="projects"){
+  if(view === "projects"){
 
     renderProjects();
     return;
@@ -880,7 +869,7 @@ document.getElementById("auth-switch")
 .addEventListener("click",()=>{
 
   setAuthMode(
-    authMode==="login"
+    authMode === "login"
       ? "signup"
       : "login"
   );
@@ -893,21 +882,24 @@ document.getElementById("auth-form")
 
   const name =
     document.getElementById("auth-name")
-    .value.trim();
+    .value
+    .trim();
 
   const email =
     document.getElementById("auth-email")
-    .value.trim()
+    .value
+    .trim()
     .toLowerCase();
 
   const password =
     document.getElementById("auth-password")
     .value;
 
-  const allUsers =
-    users();
+  const allUsers = users();
 
-  if(authMode==="signup"){
+  // SIGNUP
+
+  if(authMode === "signup"){
 
     if(!name){
 
@@ -919,11 +911,12 @@ document.getElementById("auth-form")
       return;
     }
 
-    if(
+    const exists =
       allUsers.some(
-        u=>u.email===email
-      )
-    ){
+        u => u.email === email
+      );
+
+    if(exists){
 
       setMessage(
         "Email already exists",
@@ -941,35 +934,39 @@ document.getElementById("auth-form")
 
     saveUsers(allUsers);
 
-localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
 
-currentUser = null;
+    currentUser = null;
 
-setMessage(
-  "Signup successful. Please login.",
-  "#9ff0b4"
-);
+    setMessage(
+      "Signup successful. Please login.",
+      "#9ff0b4"
+    );
 
-setAuthMode("login");
+    document.getElementById("auth-name").value = "";
+    document.getElementById("auth-email").value = "";
+    document.getElementById("auth-password").value = "";
 
-document.getElementById("auth-password").value = "";
-document.getElementById("auth-email").value = "";
+    setAuthMode("login");
 
-syncUi();
+    syncUi();
 
-return;
+    return;
+  }
+
+  // LOGIN
 
   const user =
     allUsers.find(
       u =>
-        u.email===email &&
-        u.password===password
+        u.email === email &&
+        u.password === password
     );
 
   if(!user){
 
     setMessage(
-      "Invalid credentials",
+      "Invalid email or password",
       "#ffb4b4"
     );
 
@@ -986,6 +983,8 @@ return;
     JSON.stringify(currentUser)
   );
 
+  setMessage("");
+
   syncUi();
 
   renderTable("dashboard");
@@ -998,9 +997,7 @@ document.getElementById("logout-btn")
 
   currentUser = null;
 
-  localStorage.removeItem(
-    SESSION_KEY
-  );
+  localStorage.removeItem(SESSION_KEY);
 
   syncUi();
 });
@@ -1019,7 +1016,7 @@ document.getElementById("new-project-btn")
 
     id:projects.length + 1,
 
-    name:name,
+    name,
 
     admin:currentUser.name,
 
@@ -1047,9 +1044,7 @@ document.getElementById("new-task-btn")
 
   const projectId =
     Number(
-      prompt(
-        "Project ID?"
-      )
+      prompt("Project ID?")
     );
 
   const project =
@@ -1079,12 +1074,11 @@ document.getElementById("new-task-btn")
     );
 
   if(
-    !teamMembers.includes(
-      assignee
-    )
+    !teamMembers.includes(assignee)
   ){
 
     alert("Invalid member");
+
     return;
   }
 
@@ -1112,9 +1106,8 @@ document.getElementById("new-task-btn")
 
 currentUser =
   JSON.parse(
-    localStorage.getItem(
-      SESSION_KEY
-    ) || "null"
+    localStorage.getItem(SESSION_KEY)
+    || "null"
   );
 
 setAuthMode("login");
