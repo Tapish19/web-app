@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 export default function Login() {
@@ -26,7 +26,8 @@ export default function Login() {
       <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
       <button onClick={login}>Login</button>
       {error && <p>{error}</p>}
-      <p>Don&apos;t have an account? <Link to="/signup">Sign up</Link></p>
+      <p>Don&apos;t have an account?</p>
+      <button type="button" onClick={() => navigate("/signup")}>Sign up</button>
     </div>
   );
 }
